@@ -499,7 +499,7 @@ THREE.TrackballControls = function(object, domElement, lookAt) {
 
 	function mousewheel(event) {
 
-		if (gWheelDisabled == true) return;
+		if (XAC.wheelDisabled == true) return;
 
 		if (_this.enabled === false) return;
 
