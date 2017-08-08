@@ -1,27 +1,43 @@
-/*------------------------------------------------------------------------------------*
- *
- * graphics-related library, based on three.js
- * 
- * by xiang 'anthony' chen, xiangchen@acm.org
- *
- *------------------------------------------------------------------------------------*/
+//	........................................................................................................
+//
+//  graphics-related library, based on three.js. v0.2
+//
+//  by xiangchen@acm.org, 08/2017
+//
+//	........................................................................................................
 
-/*
- *	function for performing raycasting
- */
+//
+//	function for performing raycasting
+//
 function rayCast(x, y, objs) {
 	var rayCaster = new THREE.Raycaster();
 	var vector = new THREE.Vector3();
 	vector.set((x / window.innerWidth) * 2 - 1, -(y / window.innerHeight) * 2 + 1, 0.5);
 	var projector = new THREE.Projector();
-	vector.unproject(camera);
-	rayCaster.ray.set(camera.position, vector.sub(camera.position).normalize());
+	vector.unproject(XAC.camera);
+	rayCaster.ray.set(XAC.camera.position, vector.sub(XAC.camera.position).normalize());
 	return rayCaster.intersectObjects(objs);
 }
 
-/*
-	scale an object around its center by factor
-*/
+//
+//
+//
+function getCenter(pts) {
+	var ctr = new THREE.Vector3(0, 0, 0);
+	for (var i = pts.length - 1; i >= 0; i--) {
+		ctr.x += pts[i].x;
+		ctr.y += pts[i].y;
+		ctr.z += pts[i].z;
+	}
+
+	if (pts.length > 0) ctr.multiplyScalar(1.0 / pts.length);
+
+	return ctr;
+}
+
+//
+//	scale an object around its center by factor
+//
 function scaleAroundCenter(obj, factor) {
 	// find true center point
 	var ctr0 = getCenter(gettg(obj).vertices);
@@ -38,9 +54,9 @@ function scaleAroundCenter(obj, factor) {
 	obj.position.add(ctr0.clone().sub(ctr1));
 }
 
-/*
-	scale an object along the plane ┴ to dir
-*/
+//
+//	scale an object along the plane ┴ to dir
+//
 function scaleAroundVector(obj, factor, dir) {
 	// have different scales for the rest of the two axes
 	if (Array.isArray(factor)) {
@@ -54,18 +70,17 @@ function scaleAroundVector(obj, factor, dir) {
 	}
 }
 
-/*
-	scale an object/geometry/vector along dir
-*/
+//
+//	scale an object/geometry/vector along dir
+//
 function scaleAlongVector(obj, factor, dir) {
 	scaleWithVector(obj, [1, factor, 1], dir);
 }
 
-// TODO: clean up unused methods
 
-/*
-	this method is implemented based on geometry rather than mesh
-*/
+//
+//	this method is implemented based on geometry rather than mesh
+//
 function scaleWithVector(obj, factors, dir) {
 	// var ctr0 = obj.geometry.center();
 	var ctr0 = gettg(obj).center();
@@ -85,9 +100,9 @@ function scaleWithVector(obj, factors, dir) {
 	obj.geometry.translate(offset.x, offset.y, offset.z);
 }
 
-/*
-	rotate an object towards a given direction
-*/
+//
+//	rotate an object towards a given direction
+//
 function rotateObjTo(obj, dir, isReversed) {
 	var yUp = new THREE.Vector3(0, 1, 0);
 	var angleToRotate = yUp.angleTo(dir);
@@ -96,9 +111,9 @@ function rotateObjTo(obj, dir, isReversed) {
 }
 
 
-/*
-	rotate the geometry towards a given direction
-*/
+//
+//	rotate the geometry towards a given direction
+//
 function rotateGeoTo(geo, dir, isReversed) {
 	var mr = new THREE.Matrix4();
 	var yUp = new THREE.Vector3(0, 1, 0);
@@ -108,10 +123,9 @@ function rotateGeoTo(geo, dir, isReversed) {
 	geo.applyMatrix(mr);
 }
 
-
-/*
-	rotate a vector towards a given direction
-*/
+//
+//	rotate a vector towards a given direction
+//
 function rotateVectorTo(v, dir) {
 	var yUp = new THREE.Vector3(0, 1, 0);
 	var angleToRotate = yUp.angleTo(dir);
@@ -119,12 +133,15 @@ function rotateVectorTo(v, dir) {
 	v.applyAxisAngle(axisToRotate, angleToRotate);
 }
 
+//
+//	TODO: migrate this to xac.three.js
+//
 function markVertexNeighbors(obj) {
 	removeBalls();
 
 	obj.vneighbors = [];
 	var g = gettg(obj);
-	var addNeighbors = function(list, idx, idxNeighbors) {
+	var addNeighbors = function (list, idx, idxNeighbors) {
 		if (list[idx] == undefined) list[idx] = [];
 		for (var i = idxNeighbors.length - 1; i >= 0; i--) {
 			list[idx].push(idxNeighbors[i]);
@@ -154,9 +171,9 @@ function markVertexNeighbors(obj) {
 	}
 }
 
-/*
-	get the geometry from a mesh with transformation matrix applied
-*/
+//
+//	get the geometry from a mesh with transformation matrix applied
+//
 function gettg(mesh) {
 	mesh.updateMatrixWorld();
 	var gt = mesh.geometry.clone();
@@ -164,12 +181,18 @@ function gettg(mesh) {
 	return gt;
 }
 
+//
+//	apply the transfomrational matrix of a mesh to a given vector
+//
 function getTransformedVector(v, mesh) {
 	var vt = v.clone();
 	vt.applyMatrix4(mesh.matrixWorld);
 	return vt;
 }
 
+//
+//	get bounding cylinder of an object along a given direction
+//
 function getBoundingCylinder(obj, dir) {
 	var ctr = getBoundingBoxCenter(obj);
 	var h = getDimAlong(obj, dir);
@@ -180,7 +203,6 @@ function getBoundingCylinder(obj, dir) {
 	var d = -a * ctr.x - b * ctr.y - c * ctr.z;
 
 	var gt = gettg(obj);
-	// ctr = getProjection(ctr, a, b, c, d);
 	var r = 0;
 	var vMax;
 	for (var i = gt.vertices.length - 1; i >= 0; i--) {
@@ -206,16 +228,22 @@ function getBoundingCylinder(obj, dir) {
 	};
 }
 
-function getBoundingBoxMesh(obj, material) {
-	var params = getBoundingBoxEverything(obj);
+//
+//	get the bounding box (as a mesh) of an object
+//
+XAC.getBoundingBoxMesh = function (obj, material) {
+	var params = XAC.getBoundingBoxEverything(obj);
 	var g = new THREE.BoxGeometry(params.lenx, params.leny, params.lenz);
-	var m = material == undefined ? MATERIALCONTRAST : material;
+	var m = material == undefined ? XAC.MATERIALCONTRAST : material;
 	var bbox = new THREE.Mesh(g, m);
 	bbox.position.set(params.ctrx, params.ctry, params.ctrz);
 	return bbox;
 }
 
-function getBoundingBoxEverything(obj) {
+//
+//	get all the information about the bounding box of an object
+//
+XAC.getBoundingBoxEverything = function (obj) {
 	var gt = gettg(obj);
 	gt.computeBoundingBox();
 	var cmax = gt.boundingBox.max;
@@ -239,6 +267,9 @@ function getBoundingBoxEverything(obj) {
 	};
 }
 
+//
+//	get the center of an object's bounding box
+//
 function getBoundingBoxCenter(obj) {
 	var g = obj.geometry;
 	g.computeBoundingBox();
@@ -248,14 +279,18 @@ function getBoundingBoxCenter(obj) {
 	return new THREE.Vector3(x, y, z);
 }
 
+//
+//	get the center of an object's bounding box using three js helper
+//
 function getBoundingBoxHelperCenter(obj) {
 	var bbox = new THREE.BoundingBoxHelper(obj, 0x00ff00);
 	bbox.update();
-	// 	scene.add(bbox);
-	// 	addABall(bbox.object.position, 0x00ffff, 5);
 	return bbox.object.position;
 }
 
+//
+//	get the dimensions of an object's bounding box
+//
 function getBoundingBoxDimensions(obj) {
 	var g = gettg(obj); // obj.geometry;
 	g.computeBoundingBox();
@@ -267,23 +302,35 @@ function getBoundingBoxDimensions(obj) {
 	return [lx, ly, lz];
 }
 
+//
+//	get the volume of an object's bounding box
+//
 function getBoundingBoxVolume(obj) {
 	var dims = getBoundingBoxDimensions(obj);
 	return dims[0] * dims[1] * dims[2];
 }
 
-function getBoundingSphereRadius(obj) {
+//
+//	get the radius of an object's bounding sphere
+//
+XAC.getBoundingSphereRadius = function(obj) {
 	var gt = gettg(obj);
 	gt.computeBoundingSphere();
 	return gt.boundingSphere.radius;
 }
 
+//
+//	get an object's dimension along a given direction
+//
 function getDimAlong(obj, dir) {
 	var gt = gettg(obj);
 	var range = project(gt.vertices, dir);
 	return range[1] - range[0];
 }
 
+//
+//	get an object's extrems along a given direction
+//
 function getEndPointsAlong(obj, dir) {
 	var ctr = getBoundingBoxHelperCenter(obj);
 	var ctrVal = dir.dot(ctr);
@@ -340,46 +387,51 @@ function getEndPointsAlong2(obj, dir) {
 	return endPoints;
 }
 
-function removeDisconnectedComponents(pt, pts, dist) {
-	var ctr = getCenter(pts);
-	var axis = ctr.clone().sub(pt);
-	var midDist = axis.length();
-	axis.normalize();
-	var minPosDist = Infinity;
-	var maxNegDist = -Infinity;
+//
+// find the principal axis given a set of points
+//
+XAC.findPrincipalAxis = function (points) {
+	var params = XAC.findPlaneToFitPoints(points);
 
+	// var plane = new XAC.Plane(100, 100, XAC.MATERIALCONTRAST);
+	// plane.fitTo(points[0], params.A, params.B, params.C);
+	// XAC.scene.add(plane.m);
 
-	var toKeep = [];
-	for (var i = pts.length - 1; i >= 0; i--) {
-		// determine the sign of the dist measure
-		var dToPt = (pts[i].clone().sub(pt)).dot(axis);
-		var sign = dToPt < midDist ? 1 : -1;
+	var eps = 1e-3;
+	var G = [];
+	var yUp = new THREE.Vector3(0, 1, 0);
+	var normal = new THREE.Vector3(params.A, params.B, params.C).normalize();
+	return normal;
 
-		// measure the abs dist to ctr
-		var d = (pts[i].clone().sub(ctr)).dot(axis);
+	// var angle = normal.angleTo(yUp);
+	// angle = Math.sign(angle) * Math.max(eps, Math.abs(angle));
+	// var axis = normal.clone().cross(yUp).normalize();
+	// var qcenter = new THREE.Vector3();
+	// log(angle)
 
-		// add a distance threshold so that only nearby points are selected
-		if (sign > 0 && Math.abs(d) > dist) {
-			minPosDist = Math.min(Math.abs(d), minPosDist);
-			toKeep.push(pts[i]);
-			// addABall(pts[i], 0x00ff00)
-		} else {
-			maxNegDist = Math.max(-Math.abs(d), maxNegDist);
-			// addABall(pts[i], 0x0000ff)
-		}
-	}
+	// var Z = [],
+	// 	X = [];
+	// var projs = [];
+	// for (p of points) {
+	// 	var q = XAC.getPointProjectionOnPlane(p, params.A, params.B, params.C, params.D);
+	// 	q.applyAxisAngle(axis, angle);
+	// 	qcenter.add(q);
+	// 	// _balls.remove(addABall(q, 0x0eeff0, 0.2));
 
-	// if there is a 'gap', discard the set of far away points
-	if (minPosDist != Infinity && maxNegDist != -Infinity && minPosDist - maxNegDist > dist) {
-		return toKeep;
-	} else {
-		return pts;
-	}
-}
+	// 	projs.push([q.x, q.z]);
+	// }
+	// qcenter.divideScalar(points.length);
 
-function computeFaceNormal(u, v, w) {
-	var uv = v.clone().sub(u);
-	var vw = w.clone().sub(v);
-	var nml = new THREE.Vector3().crossVectors(uv, vw);
-	return nml;
+	// var fitInfo = XAC.fitLine(projs);
+	// log(fitInfo);
+	// var principalAxis = new THREE.Vector3(1, 0, fitInfo.b1);
+
+	// // addAnArrow(qcenter, principalAxis, 10, 0xff00ff);
+	// var q2 = qcenter.clone().add(principalAxis);
+
+	// qcenter.applyAxisAngle(axis, -angle);
+	// q2.applyAxisAngle(axis, -angle);
+	// principalAxis = q2.sub(qcenter);
+	// // addAnArrow(qcenter, principalAxis.clone(), 10, 0xff0000);
+	// return principalAxis;
 }

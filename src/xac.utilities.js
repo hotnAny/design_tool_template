@@ -32,13 +32,13 @@ XAC.loadStl = function(data) {
 	XAC.scene.add(XAC.grid);
 
 	// relocate the camera
-	var r = Math.max(25, getBoundingSphereRadius(object));
+	var r = Math.max(25, XAC.getBoundingSphereRadius(object));
 	XAC.camera.position.copy(XAC.posCam.clone().normalize().multiplyScalar(r * 2));
 
 	// re-lookAt for the camera
 	XAC.mouseCtrls.target = new THREE.Vector3(0, 0, 0);
 
 	// store the object
-	objects.push(object);
+	// objects.push(object);
 
 }

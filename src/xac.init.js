@@ -144,4 +144,9 @@ $(document).ready(function() {
     };
 
     render();
+
+    //
+    //  create basic ui
+    //
+    XAC.createUI();
 });
