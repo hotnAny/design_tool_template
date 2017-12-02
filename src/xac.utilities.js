@@ -1,10 +1,10 @@
-/*------------------------------------------------------------------------------------*
- *
- * useful recurring routines
- *
- * by xiang 'anthony' chen, xiangchen@acm.org
- *
- *------------------------------------------------------------------------------------*/
+//	........................................................................................................
+//
+//	useful recurring routines, v1.0
+//
+//  by xiangchen@acm.org, 12/2017
+//
+//	........................................................................................................
 
 var XAC = XAC || {};
 
@@ -15,7 +15,7 @@ function log(msg) {
 //
 //	load models from stl binary/ascii data
 //
-XAC.loadStl = function(data) {
+XAC.loadStl = function (data) {
 	var stlLoader = new THREE.STLLoader();
 	var geometry = stlLoader.parse(data);
 	var object = new THREE.Mesh(geometry, MATERIALNORMAL);

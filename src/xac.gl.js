@@ -1,8 +1,8 @@
 //	........................................................................................................
 //
-//  graphics-related library, based on three.js. v0.2
+//  graphics-related library, based on three.js. v0.4
 //
-//  by xiangchen@acm.org, 08/2017
+//  by xiangchen@acm.org, 12/2017
 //
 //	........................................................................................................
 
@@ -385,53 +385,4 @@ function getEndPointsAlong2(obj, dir) {
 
 	// log(endPoints);
 	return endPoints;
-}
-
-//
-// find the principal axis given a set of points
-//
-XAC.findPrincipalAxis = function (points) {
-	var params = XAC.findPlaneToFitPoints(points);
-
-	// var plane = new XAC.Plane(100, 100, XAC.MATERIALCONTRAST);
-	// plane.fitTo(points[0], params.A, params.B, params.C);
-	// XAC.scene.add(plane.m);
-
-	var eps = 1e-3;
-	var G = [];
-	var yUp = new THREE.Vector3(0, 1, 0);
-	var normal = new THREE.Vector3(params.A, params.B, params.C).normalize();
-	return normal;
-
-	// var angle = normal.angleTo(yUp);
-	// angle = Math.sign(angle) * Math.max(eps, Math.abs(angle));
-	// var axis = normal.clone().cross(yUp).normalize();
-	// var qcenter = new THREE.Vector3();
-	// log(angle)
-
-	// var Z = [],
-	// 	X = [];
-	// var projs = [];
-	// for (p of points) {
-	// 	var q = XAC.getPointProjectionOnPlane(p, params.A, params.B, params.C, params.D);
-	// 	q.applyAxisAngle(axis, angle);
-	// 	qcenter.add(q);
-	// 	// _balls.remove(addABall(q, 0x0eeff0, 0.2));
-
-	// 	projs.push([q.x, q.z]);
-	// }
-	// qcenter.divideScalar(points.length);
-
-	// var fitInfo = XAC.fitLine(projs);
-	// log(fitInfo);
-	// var principalAxis = new THREE.Vector3(1, 0, fitInfo.b1);
-
-	// // addAnArrow(qcenter, principalAxis, 10, 0xff00ff);
-	// var q2 = qcenter.clone().add(principalAxis);
-
-	// qcenter.applyAxisAngle(axis, -angle);
-	// q2.applyAxisAngle(axis, -angle);
-	// principalAxis = q2.sub(qcenter);
-	// // addAnArrow(qcenter, principalAxis.clone(), 10, 0xff0000);
-	// return principalAxis;
 }
