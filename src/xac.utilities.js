@@ -40,5 +40,4 @@ XAC.loadStl = function (data) {
 
 	// store the object
 	// objects.push(object);
-
 }

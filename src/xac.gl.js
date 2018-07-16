@@ -20,7 +20,7 @@ function rayCast(x, y, objs) {
 }
 
 //
-//
+//  get the center of a set of points
 //
 function getCenter(pts) {
 	var ctr = new THREE.Vector3(0, 0, 0);
